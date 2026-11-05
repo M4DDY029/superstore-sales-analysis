@@ -11,12 +11,12 @@ from plotly.subplots import make_subplots
 
 
 DATA_FILE = Path(__file__).resolve().parent / "data" / "processed" / "superstore_cleaned.csv"
-INK = "#172923"
-GREEN = "#187456"
-MINT = "#DDEFE6"
-CORAL = "#C7654F"
-MUTED = "#718078"
-GRID = "#E8EDE9"
+INK = "#14233F"
+GREEN = "#315BD6"
+MINT = "#C9D5FF"
+CORAL = "#E76E4A"
+MUTED = "#68758A"
+GRID = "#E7EAF1"
 
 st.set_page_config(
     page_title="Superstore | Sales & Profit",
@@ -28,28 +28,31 @@ st.set_page_config(
 st.markdown(
     f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
 
     :root {{
         --ink: {INK};
         --green: {GREEN};
         --muted: {MUTED};
-        --line: #E5EAE6;
-        --paper: #F7F9F7;
+        --line: #E2E6EE;
+        --paper: #F4F5F8;
     }}
     html, body, [class*="css"] {{
-        font-family: 'DM Sans', sans-serif;
+        font-family: 'Manrope', sans-serif;
         color: var(--ink);
     }}
     .stApp {{ background: var(--paper); }}
-    [data-testid="stHeader"] {{ background: rgba(247,249,247,.92); }}
+    [data-testid="stHeader"] {{ background: rgba(244,245,248,.92); }}
     [data-testid="stAppViewContainer"] .main .block-container {{
-        max-width: 1440px;
-        padding: 2rem 3.25rem 4rem;
+        max-width: 1520px;
+        padding: 1.6rem 3rem 4rem;
     }}
     [data-testid="stSidebar"] {{
-        background: #F0F4F1;
+        background: #E9EDF4;
         border-right: 1px solid var(--line);
+    }}
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] strong {{
+        color: var(--ink);
     }}
     [data-testid="stSidebar"] > div:first-child {{ padding-top: 1.5rem; }}
     [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
@@ -57,38 +60,50 @@ st.markdown(
         font-size: .88rem;
     }}
     h1, h2, h3 {{ color: var(--ink); letter-spacing: -.035em; }}
-    h1 {{ font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; }}
+    h1 {{ font-weight: 800; }}
     [data-testid="stMetric"] {{
         background: #FFFFFF;
         border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 1.05rem 1.15rem;
-        min-height: 120px;
-        box-shadow: 0 2px 8px rgba(23,41,35,.025);
+        border-radius: 14px;
+        padding: 1.15rem 1.25rem;
+        min-height: 128px;
+        box-shadow: 0 5px 16px rgba(20,35,63,.045);
+    }}
+    [data-testid="stHorizontalBlock"] [data-testid="stMetric"]:first-child {{
+        background: {INK};
+        border-color: {INK};
+    }}
+    [data-testid="stHorizontalBlock"] [data-testid="stMetric"]:first-child [data-testid="stMetricLabel"] p,
+    [data-testid="stHorizontalBlock"] [data-testid="stMetric"]:first-child [data-testid="stMetricValue"] {{
+        color: #FFFFFF;
+    }}
+    [data-testid="stHorizontalBlock"] [data-testid="stMetric"]:nth-child(2) {{
+        background: #FFF1EA;
+        border-color: #F4D6C9;
     }}
     [data-testid="stMetricLabel"] p {{
         color: var(--muted);
-        font-size: .78rem;
+        font-size: .74rem;
         font-weight: 600;
-        letter-spacing: .04em;
+        letter-spacing: .09em;
         text-transform: uppercase;
     }}
     [data-testid="stMetricValue"] {{
         color: var(--ink);
-        font-size: 1.65rem;
-        font-weight: 600;
+        font-size: 1.8rem;
+        font-weight: 800;
         letter-spacing: -.04em;
     }}
     [data-testid="stPlotlyChart"] {{
         background: #FFFFFF;
         border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: .5rem .65rem .15rem;
-        box-shadow: 0 2px 8px rgba(23,41,35,.025);
+        border-radius: 14px;
+        padding: .55rem .7rem .2rem;
+        box-shadow: 0 5px 16px rgba(20,35,63,.045);
     }}
     div[data-testid="stButton"] > button {{
-        border: 1px solid #D5DED8;
-        border-radius: 8px;
+        border: 1px solid #CBD3E1;
+        border-radius: 9px;
         color: var(--ink);
         background: white;
         font-weight: 600;
@@ -98,56 +113,111 @@ st.markdown(
         color: var(--green);
     }}
     .eyebrow {{
-        color: var(--green);
-        font-size: .72rem;
+        color: #FFD28A;
+        font-family: 'DM Mono', monospace;
+        font-size: .7rem;
         font-weight: 700;
-        letter-spacing: .15em;
+        letter-spacing: .12em;
         text-transform: uppercase;
         margin-bottom: .6rem;
     }}
     .hero {{
-        background: #FFFFFF;
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 2rem 2.2rem 1.65rem;
-        margin: 0 0 1.6rem;
-        box-shadow: 0 4px 16px rgba(23,41,35,.035);
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(230px, .55fr);
+        gap: 2rem;
+        align-items: center;
+        background:
+            radial-gradient(circle at 85% 20%, rgba(86,119,235,.35), transparent 28%),
+            linear-gradient(118deg, #14233F 0%, #1B3159 72%, #263E70 100%);
+        border: 1px solid #2B3F63;
+        border-radius: 20px;
+        padding: 2.35rem 2.7rem;
+        margin: 0 0 1.4rem;
+        color: #FFFFFF;
+        box-shadow: 0 14px 32px rgba(20,35,63,.14);
     }}
     .hero h1 {{
         margin: 0;
-        font-size: clamp(2.2rem, 4vw, 3.35rem);
-        line-height: 1.08;
+        max-width: 740px;
+        color: #FFFFFF;
+        font-size: clamp(2.35rem, 4vw, 3.8rem);
+        font-weight: 800;
+        line-height: 1.02;
+        letter-spacing: -.065em;
     }}
     .hero-copy {{
-        color: var(--muted);
-        font-size: .98rem;
+        color: #C4CEE0;
+        font-size: .94rem;
         line-height: 1.65;
-        max-width: 780px;
-        margin-top: .75rem;
+        max-width: 640px;
+        margin-top: .95rem;
     }}
-    .hero-meta {{
+    .hero-side {{
+        position: relative;
+        z-index: 1;
+        background: rgba(255,255,255,.075);
+        border: 1px solid rgba(255,255,255,.17);
+        border-radius: 14px;
+        padding: 1.1rem 1.2rem;
+        backdrop-filter: blur(6px);
+    }}
+    .hero-side-label {{
+        color: #B5C2D8;
+        font-family: 'DM Mono', monospace;
+        font-size: .68rem;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+    }}
+    .hero-side-value {{
+        color: #FFFFFF;
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -.06em;
+        margin: .25rem 0 .1rem;
+    }}
+    .hero-side-detail {{
+        color: #C4CEE0;
+        font-size: .78rem;
+    }}
+    .hero-side-rule {{
+        height: 1px;
+        background: rgba(255,255,255,.16);
+        margin: .8rem 0;
+    }}
+    .hero-sparkline {{
         display: flex;
-        gap: .55rem;
-        flex-wrap: wrap;
-        margin-top: 1.25rem;
+        align-items: end;
+        gap: 7px;
+        height: 42px;
+        margin: .6rem 0 .3rem;
     }}
-    .hero-tag {{
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: .32rem .7rem;
-        color: #53645B;
-        background: #FAFCFA;
-        font-size: .76rem;
-        font-weight: 600;
+    .hero-sparkline span {{
+        flex: 1;
+        min-height: 5px;
+        border-radius: 4px 4px 1px 1px;
+        background: #6886E8;
+    }}
+    .hero-sparkline span:last-child {{ background: #FFC86A; }}
+    .hero-spark-label {{
+        color: #AEBBD2;
+        font-family: 'DM Mono', monospace;
+        font-size: .62rem;
+        letter-spacing: .04em;
+        text-transform: uppercase;
     }}
     .section-heading {{
         display: flex;
         align-items: baseline;
         gap: .7rem;
-        margin: 2rem 0 .25rem;
+        margin: 1.75rem 0 .25rem;
     }}
     .section-heading .number {{
         color: var(--green);
+        background: #E3E9FF;
+        border-radius: 5px;
+        padding: .2rem .38rem;
         font-size: .76rem;
         font-weight: 700;
         letter-spacing: .1em;
@@ -169,6 +239,7 @@ st.markdown(
         border-radius: 12px;
         background: #FFFFFF;
         padding: 1.1rem 1.2rem;
+        box-shadow: 0 4px 14px rgba(20,35,63,.035);
     }}
     .insight-label {{
         color: var(--green);
@@ -197,6 +268,15 @@ st.markdown(
         padding-top: 1rem;
         margin-top: 2rem;
         font-size: .77rem;
+    }}
+    @media (max-width: 800px) {{
+        [data-testid="stAppViewContainer"] .main .block-container {{
+            padding: 1rem 1rem 3rem;
+        }}
+        .hero {{
+            grid-template-columns: 1fr;
+            padding: 1.6rem;
+        }}
     }}
     </style>
     """,
@@ -255,7 +335,7 @@ def style_figure(figure: go.Figure, height: int = 360) -> go.Figure:
         template="plotly_white",
         height=height,
         margin=dict(l=20, r=20, t=54, b=24),
-        font=dict(family="DM Sans, sans-serif", color=INK, size=12),
+        font=dict(family="Manrope, sans-serif", color=INK, size=12),
         title=dict(font=dict(size=15, color=INK), x=0.025, xanchor="left"),
         legend=dict(
             orientation="h",
@@ -282,13 +362,13 @@ segment_options = sorted(df["segment"].dropna().unique().tolist())
 
 st.sidebar.markdown(
     """
-    <div style="font-size:.72rem;font-weight:700;letter-spacing:.15em;color:#187456">
+    <div style="font-family:'DM Mono',monospace;font-size:.68rem;font-weight:500;letter-spacing:.12em;color:#315BD6">
     SUPERSTORE / REPORT 01
     </div>
-    <div style="font-family:Georgia,serif;font-size:1.55rem;color:#172923;margin:.35rem 0 .3rem">
+    <div style="font-size:1.55rem;font-weight:800;letter-spacing:-.05em;color:#14233F;margin:.35rem 0 .3rem">
     Explore the data
     </div>
-    <div style="font-size:.83rem;color:#718078;line-height:1.5;margin-bottom:1.3rem">
+    <div style="font-size:.83rem;color:#68758A;line-height:1.5;margin-bottom:1.3rem">
     Adjust the selections to update every chart and headline metric.
     </div>
     """,
@@ -325,26 +405,6 @@ filtered = df[
     & df["segment"].isin(selected_segments)
 ].copy()
 
-st.markdown(
-    """
-    <div class="hero">
-        <div class="eyebrow">Commercial performance / 2011—2014</div>
-        <h1>Superstore sales,<br>in perspective.</h1>
-        <div class="hero-copy">
-            A closer look at the products, places and pricing decisions shaping
-            sales performance. Use the filters to explore the dataset from
-            different business angles.
-        </div>
-        <div class="hero-meta">
-            <span class="hero-tag">Global Superstore</span>
-            <span class="hero-tag">51,290 order lines</span>
-            <span class="hero-tag">Four years of activity</span>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
 if filtered.empty:
     st.info("No records match these filters. Choose at least one value in every filter.")
     st.stop()
@@ -354,6 +414,50 @@ total_profit = filtered["profit"].sum()
 profit_margin = total_profit / total_sales if total_sales else 0
 total_orders = filtered["order_id"].nunique()
 total_customers = filtered["customer_id"].nunique()
+yearly = filtered.groupby("order_year").agg(sales=("sales", "sum"), profit=("profit", "sum"))
+best_year = int(yearly["sales"].idxmax())
+if len(yearly) > 1 and yearly.iloc[0]["sales"] != 0:
+    sales_change = (yearly.iloc[-1]["sales"] / yearly.iloc[0]["sales"] - 1) * 100
+    change_label = f"{sales_change:+.1f}%"
+    change_detail = f"{yearly.index[0]} → {yearly.index[-1]} sales growth"
+else:
+    change_label = f"{best_year}"
+    change_detail = "Strongest year in this selection"
+largest_year_sales = yearly["sales"].max()
+hero_bars = "".join(
+    f'<span style="height:{max(12, int(value / largest_year_sales * 100))}%"></span>'
+    for value in yearly["sales"]
+)
+
+st.markdown(
+    f"""
+    <div class="hero">
+        <div class="hero-main">
+            <div class="eyebrow">FIELD REPORT &nbsp; / &nbsp; RETAIL PERFORMANCE &nbsp; / &nbsp; 2011—14</div>
+            <h1>Growth has a story.<br>Find the margin.</h1>
+            <div class="hero-copy">
+                Follow four years of sales through products, markets and pricing.
+                Change the filters to see what is driving the result.
+            </div>
+        </div>
+        <div class="hero-side">
+            <div class="hero-side-label">{change_detail}</div>
+            <div class="hero-side-value">{change_label}</div>
+            <div class="hero-side-detail">Based on the selected years</div>
+            <div class="hero-side-rule"></div>
+            <div class="hero-side-label">Best-performing year</div>
+            <div style="color:#FFD28A;font-size:1.2rem;font-weight:800;margin-top:.25rem">
+                {best_year} &nbsp; <span style="font-size:.77rem;font-weight:500;color:#C4CEE0">
+                {yearly.loc[best_year, "sales"]:,.0f} sales
+                </span>
+            </div>
+            <div class="hero-sparkline">{hero_bars}</div>
+            <div class="hero-spark-label">Annual sales trajectory</div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 section_heading(
     "01",
@@ -377,9 +481,7 @@ monthly = (
     .agg(sales=("sales", "sum"), profit=("profit", "sum"))
     .reset_index()
 )
-yearly = filtered.groupby("order_year").agg(sales=("sales", "sum"), profit=("profit", "sum"))
 monthly_peaks = monthly.loc[monthly["sales"].idxmax()]
-best_year = int(yearly["sales"].idxmax())
 
 section_heading(
     "02",
@@ -395,7 +497,7 @@ trend.add_trace(
         mode="lines",
         line=dict(color=GREEN, width=2.7),
         fill="tozeroy",
-        fillcolor="rgba(24,116,86,.07)",
+        fillcolor="rgba(49,91,214,.08)",
         hovertemplate="%{x|%b %Y}<br>Sales %{y:,.0f}<extra></extra>",
     ),
     secondary_y=False,
@@ -584,7 +686,7 @@ with left:
         opacity=0.48,
         hover_data=["product_name", "region"],
         labels={"discount": "Discount rate", "profit": "Profit · dataset units"},
-        color_discrete_sequence=[GREEN, "#D39B4D", "#7697A8"],
+        color_discrete_sequence=[GREEN, "#E4A62B", "#8A75DB"],
     )
     discount_chart.add_hline(y=0, line_dash="dot", line_color=CORAL, line_width=1.5)
     discount_chart.update_xaxes(tickformat=".0%")
